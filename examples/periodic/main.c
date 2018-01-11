@@ -28,6 +28,7 @@
 
 #include "lmic.h"
 #include "debug.h"
+#include<stdio.h>
 
 // sensor functions
 extern void initsensor(void);
@@ -42,7 +43,7 @@ extern u2_t readsensor(void);
 static const u1_t APPEUI[8]  = { 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05 };
 
 // unique device ID (LSBF)
-static const u1_t DEVEUI[8]  = { 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05 };
+u1_t DEVEUI[8]  = { 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05 };
 
 // device-specific AES key (derived from device EUI)
 static const u1_t DEVKEY[16] = { 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05 };
@@ -56,7 +57,7 @@ void os_getArtEui (u1_t* buf) {
     memcpy(buf, APPEUI, 8);
 }
 
-// provide device ID (8 bytes, LSBF)
+	// provide device ID (8 bytes, LSBF)
 void os_getDevEui (u1_t* buf) {
     memcpy(buf, DEVEUI, 8);
 }
@@ -84,7 +85,26 @@ static void initfunc (osjob_t* j) {
 
 
 // application entry point
-int main () {
+int main (int argc, char *argv[]) {
+    if (argc < 3 ) {
+	printf("Usage: id,count\n");
+	return 1;
+    }
+    int num;
+    sscanf (argv[2],"%d",&num);
+
+    char bytes[8];
+    int i=0;
+    for (;i<8;++i) {
+    	int value;
+        sscanf(argv[1]+2*i,"%02x",&value);
+        bytes[i] = value;
+	printf("0x%x",value);
+	DEVEUI[i]=value;
+    }
+
+    printf("\nID: %s Count: %d\n",argv[1],num);
+    DEVEUI[0]  = 0;
     osjob_t initjob;
 
     // initialize runtime env
