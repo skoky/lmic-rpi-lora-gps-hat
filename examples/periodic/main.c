@@ -93,18 +93,17 @@ int main (int argc, char *argv[]) {
     int num;
     sscanf (argv[2],"%d",&num);
 
+    printf("ID: ");
+    int value=0;
     char bytes[8];
-    int i=0;
-    for (;i<8;++i) {
-    	int value;
-        sscanf(argv[1]+2*i,"%02x",&value);
+    for (int i=0;i<8;++i) {
+        sscanf(argv[1]+2*i,"%2x",&value);
         bytes[i] = value;
-	printf("0x%x",value);
+	printf("0x%x ",value);
 	DEVEUI[i]=value;
     }
 
-    printf("\nID: %s Count: %d\n",argv[1],num);
-    DEVEUI[0]  = 0;
+    printf(" Count: %d\n",num);
     osjob_t initjob;
 
     // initialize runtime env
@@ -114,8 +113,8 @@ int main (int argc, char *argv[]) {
     // setup initial job
     os_setCallback(&initjob, initfunc);
     // execute scheduled jobs and events
-    os_runloop();
-//     os_runloop_count(3000);
+//    os_runloop();
+     os_runloop_count(num);
     // (not reached)
     return 0;
 }
